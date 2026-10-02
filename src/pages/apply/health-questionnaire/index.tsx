@@ -69,7 +69,7 @@ const Dashboard = ({ repo }: InferGetServerSidePropsType<typeof getServerSidePro
                 </>
             ) : (
                 <>
-                    <div className="flex flex-col items-center justify-center min-h-[95vh] w-full overflow-hidden">
+                    <div className="flex flex-col items-center justify-center min-h-[95vh] w-full">
                         <HealthQuestionnaire repo={repo} />
                     </div>
                 </>

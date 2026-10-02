@@ -199,7 +199,6 @@ const Page = ({ repo }: InferGetServerSidePropsType<typeof getServerSideProps>) 
         if (isAnyModalOpen) {
             document.body.style.overflow = 'hidden';
         } else {
-            // Let CSS handle scroll behavior (mobile "native-app feel" etc.)
             document.body.style.overflow = initialBodyOverflowRef.current;
         }
 

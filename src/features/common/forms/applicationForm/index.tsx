@@ -349,7 +349,7 @@ const ApplicationForm = (props: any) => {
     return (
         <>
             <SubmittingSpinner isVisible={isSubmitting} />
-            <div className="application-form flex flex-col items-center h-svh overflow-y-scroll md:h-auto md:overflow-y-auto justify-center pt-8 m-4 md:p-0">
+            <div className="application-form flex flex-col items-center justify-center pt-8 m-4 md:p-0">
                 <div
                     className={`absolute top-20 right-2 md:right-20 bg-[#012c66] font-bold opacity-80 rounded-md text-white p-4 ${
                         isDialogOpen ? 'max-w-40 block' : 'max-w-0 hidden'

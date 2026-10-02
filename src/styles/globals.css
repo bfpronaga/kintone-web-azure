@@ -86,25 +86,6 @@ html {
 @media (min-width: 768px) {
     html {
         font-size: 18px;
-        overflow: visible;
-    }
-}
-@media (max-width: 768px) {
-    html,
-    body {
-        overflow: hidden;
-        height: 100%;
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        overscroll-behavior: none; /* Prevent overscroll on iOS */
-    }
-    .application-form {
-        overscroll-behavior: none;
-        scroll-behavior: smooth;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        &::-webkit-scrollbar {
-            display: none;
-        }
     }
 }
 

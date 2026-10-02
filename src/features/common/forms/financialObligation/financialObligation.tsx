@@ -4,7 +4,7 @@ import localFont from 'next/font/local';
 const euroStyleBoldFont = localFont({ src: 'fonts/EurostileLTStd-Bold.otf', display: 'swap', weight: '200', style: 'normal' });
 export default function Component() {
     return (
-        <div className="bg-white min-h-screen text-black overflow-auto font-[afacad]">
+        <div className="bg-white min-h-screen text-black font-[afacad]">
             <div className="relative flex max-w-6xl mx-auto shadow-lg rounded-lg border-white">
                 {/* <div className="absolute w-[95%] h-[95%] p-[5%] border-4 border-blue-200"></div> */}
                 <div className="grid md:grid-cols-2 gap-0">

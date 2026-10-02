@@ -114,7 +114,7 @@ const ReferenceForm = () => {
         }
     };
     return (
-        <div className="grid justify-center px-10 pb-10 max-h-screen overflow-y-scroll">
+        <div className="grid justify-center px-10 pb-10">
             <SubmittingSpinner isVisible={isSubmitting} />
             <form
                 onSubmit={(e) => onSubmit(e)}
