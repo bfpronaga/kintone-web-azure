@@ -383,9 +383,6 @@ export const DoctrinalStatement = () => {
                 <li className="mb-2">Israel will be restored under the Kingship of Messiah Jesus {italicVerse('(Luke 1:32)')}</li>
                 <li className="mb-2">All believers shall be joint heirs with the Messiah {italicVerse('(Rom. 8:17)')}</li>
             </ul>
-            <a href="/files/BFP-Doctrinal-Statement.pdf" download="BFP-Doctrinal-Statement.pdf" className="m-3 underline">
-                Download BFP Doctrinal Statement
-            </a>
         </div>
     );
 };
