@@ -7,17 +7,20 @@ import logError from '@/common/logError';
 import { REST_SavedVolunteerApplicationForm, REST_VolunteerApplicationForm } from '@/types/VolunteerApplicationForm';
 import { REST_OnlineVolunteerApplication, REST_SavedOnlineVolunteerApplication } from '@/types/OnlineVolunteerApplication';
 import {
-    Necessary_Documents,
-    Necessary_Documents_ShortTerm,
-    Necessary_Documents_ShortTerm_USA,
-    Necessary_Documents_USA,
-    NecessaryDocuments
+    requiredDocumentFields,
+    SPOUSE_LETTER_DOCUMENT_LABEL,
+    Spouse_Letter_Field
 } from '@/constants/necessaryDocuments';
 
 type Data = {
     res?: any;
     resp2?: any;
 };
+
+function hasUploadedFile(record: REST_SavedVolunteerApplicationForm, field: string): boolean {
+    const value = (record as unknown as Record<string, { value?: unknown }>)[field]?.value;
+    return Array.isArray(value) && value.length > 0;
+}
 
 export type ReqData = {
     userApplicationRef: string;
@@ -69,7 +72,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                     }
                 }
             });
-            // update formSubmission, 'Necessary Documents', if all documents are submitted
             const dashboardRecord = await client.record
                 .getRecord<REST_OnlineVolunteerApplication>({
                     app: OnlineVolunteerApplicationAppID as string,
@@ -79,6 +81,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 .catch((e) => {
                     throw new Error('oldRecord:' + e);
                 });
+            const submittedDocuments = dashboardRecord.documents.value ?? [];
+            if (field === Spouse_Letter_Field && !submittedDocuments.includes(SPOUSE_LETTER_DOCUMENT_LABEL)) {
+                await client.record.updateRecord({
+                    app: OnlineVolunteerApplicationAppID as string,
+                    id: userRef,
+                    record: {
+                        documents: { value: [...submittedDocuments, SPOUSE_LETTER_DOCUMENT_LABEL] }
+                    }
+                });
+            }
+            // update formSubmission, 'Necessary Documents', if all documents are submitted
             if (!dashboardRecord['formSubmission'].value.includes('Necessary Documents')) {
                 const applicationFormRecord = await client.record
                     .getRecord<REST_SavedVolunteerApplicationForm>({
@@ -86,14 +99,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                         id: userApplicationRef
                     })
                     .then((res) => res.record);
-                const necessaryDocuments = (() => {
-                    if (dashboardRecord['office'].value === 'USA') {
-                        return dashboardRecord['type'].value == 'Short Term' ? Necessary_Documents_ShortTerm_USA : Necessary_Documents_USA;
-                    } else {
-                        return dashboardRecord['type'].value == 'Short Term' ? Necessary_Documents_ShortTerm : Necessary_Documents;
-                    }
-                })();
-                if (necessaryDocuments.every((doc) => applicationFormRecord[doc].value[0])) {
+                const necessaryDocuments = requiredDocumentFields(dashboardRecord);
+                if (necessaryDocuments.every((doc) => hasUploadedFile(applicationFormRecord, doc))) {
                     await client.record.updateRecord({
                         app: OnlineVolunteerApplicationAppID as string,
                         id: userRef,

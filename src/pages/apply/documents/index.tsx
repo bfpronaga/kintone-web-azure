@@ -12,8 +12,9 @@ import { parseCookies } from 'nookies';
 import { KintoneRestAPIClient } from '@kintone/rest-api-client';
 import kintoneClient from '@/common/kintoneClient';
 import { REST_SavedVolunteerApplicationForm } from '@/types/VolunteerApplicationForm';
-import { VolunteerApplicationAppID } from '@/common/env';
-import { Necessary_Documents_USA } from '@/constants/necessaryDocuments';
+import { NecessaryDocuments, isSpouseLetterRequiredValue, Necessary_Documents_USA, Spouse_Letter_Field } from '@/constants/necessaryDocuments';
+import { OnlineVolunteerApplicationAppID, VolunteerApplicationAppID } from '@/common/env';
+import { REST_OnlineVolunteerApplication } from '@/types/OnlineVolunteerApplication';
 import { usePageTransition } from '@/common/context/pageTransition';
 
 const Check = () => (
@@ -43,9 +44,11 @@ const Documents = ({ repo }: InferGetServerSidePropsType<typeof getServerSidePro
         }
     }, [repo]);
 
-    const isSubmitted = (document: (typeof Necessary_Documents_USA)[number]) => repo?.submittedDocuments?.includes(document);
+    const isSubmitted = (document: NecessaryDocuments) => repo?.submittedDocuments?.includes(document);
 
-    const uploadsArray = office == 'USA' ? (['passport', 'recentPhoto', 'ssn'] as const) : (['passport', 'recentPhoto'] as const);
+    const uploadsArray: NecessaryDocuments[] = ['passport', 'recentPhoto'];
+    if (office == 'USA') uploadsArray.push('ssn');
+    if (repo?.isSpouseLetterRequired) uploadsArray.push('spouseLetter');
     const medicalFormArray = ['medicalStatusForm', 'doctorLetter'] as const;
     const criminalCheckArray = ['criminalCheck', 'criminalCheckApostille'] as const;
     const requiredDocumentsCount = () => {
@@ -91,6 +94,14 @@ const Documents = ({ repo }: InferGetServerSidePropsType<typeof getServerSidePro
                                     Social Security Card
                                 </Link>
                                 {isSubmitted('ssn') && <Check />}
+                            </div>
+                        )}
+                        {repo?.isSpouseLetterRequired && (
+                            <div className="relative flex items-center">
+                                <Link href="./documents/spouse-letter" className="btn">
+                                    Spouse Letter
+                                </Link>
+                                {isSubmitted('spouseLetter') && <Check />}
                             </div>
                         )}
                         {/* <h1 className="text-xl my-10">
@@ -186,17 +197,33 @@ export default Documents;
 
 type Repo = {
     submittedDocuments: string[];
+    isSpouseLetterRequired: boolean;
 };
 export const getServerSideProps = (async (context) => {
     try {
         const cookies = parseCookies(context);
         const ref = cookies.ref || null;
         if (ref) {
-            const applicationFormRecord = await kintoneClient.record.getAllRecords<REST_SavedVolunteerApplicationForm>({
-                app: VolunteerApplicationAppID as string,
-                condition: `ref="${ref}"`
-            });
-            return { props: { repo: { submittedDocuments: Necessary_Documents_USA.filter((doc) => applicationFormRecord[0][doc].value[0]) } } };
+            const [applicationFormRecord, onlineApplication] = await Promise.all([
+                kintoneClient.record.getAllRecords<REST_SavedVolunteerApplicationForm>({
+                    app: VolunteerApplicationAppID as string,
+                    condition: `ref="${ref}"`
+                }),
+                kintoneClient.record.getRecord<REST_OnlineVolunteerApplication>({
+                    app: OnlineVolunteerApplicationAppID as string,
+                    id: ref
+                })
+            ]);
+            const isSpouseLetterRequired = isSpouseLetterRequiredValue(onlineApplication.record.isSpouseLetterRequired?.value);
+            const documentFields = isSpouseLetterRequired ? [...Necessary_Documents_USA, Spouse_Letter_Field] : Necessary_Documents_USA;
+            return {
+                props: {
+                    repo: {
+                        isSpouseLetterRequired,
+                        submittedDocuments: documentFields.filter((doc) => applicationFormRecord[0][doc].value[0])
+                    }
+                }
+            };
         } else
             return {
                 props: {} // Return empty props if ref is not found

@@ -17,6 +17,7 @@ export interface OnlineVolunteerApplication {
     isFirstTimeOnForm: kintone.fieldTypes.RadioButton;
     status: kintone.fieldTypes.DropDown;
     isComplete: kintone.fieldTypes.RadioButton;
+    isSpouseLetterRequired: kintone.fieldTypes.RadioButton;
 
     formSubmission: kintone.fieldTypes.CheckBox;
     documents: kintone.fieldTypes.CheckBox;
@@ -55,6 +56,7 @@ export type REST_OnlineVolunteerApplication = {
     isFirstTimeOnForm: KintoneRecordField.RadioButton;
     status: KintoneRecordField.DropDown;
     isComplete: KintoneRecordField.RadioButton;
+    isSpouseLetterRequired: KintoneRecordField.RadioButton;
 
     formSubmission: KintoneRecordField.CheckBox;
     documents: KintoneRecordField.CheckBox;

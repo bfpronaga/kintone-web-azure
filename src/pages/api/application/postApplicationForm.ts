@@ -6,6 +6,7 @@ import logError from '@/common/logError';
 import { REST_OnlineVolunteerApplication, REST_SavedOnlineVolunteerApplication } from '@/types/OnlineVolunteerApplication';
 import { REST_VolunteerApplicationForm } from '@/types/VolunteerApplicationForm';
 import notificationApplicationUpdated from '../hooks/notification';
+import { spouseLetterRequiredForMaritalStatus } from '@/constants/necessaryDocuments';
 
 type Data = {
     res?: any;
@@ -50,6 +51,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 app: VolunteerApplicationAppID as string,
                 id: resp2[0]['applicationRef'].value,
                 record: record
+            });
+            await client.record.updateRecord({
+                app: OnlineVolunteerApplicationAppID as string,
+                id: record['ref'].value,
+                record: {
+                    isSpouseLetterRequired: {
+                        value: spouseLetterRequiredForMaritalStatus(record.maritalStatus?.value) ? 'true' : 'false'
+                    }
+                }
             });
             const resp3 = await notificationApplicationUpdated(res, 'application', resp2[0], 'applicationSubmission');
             // TODO: add resp3 handler

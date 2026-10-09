@@ -164,6 +164,7 @@ export interface VolunteerApplicationForm {
     criminalCheckApostille: kintone.fieldTypes.File;
     passport: kintone.fieldTypes.File;
     doctorLetter: kintone.fieldTypes.File;
+    spouseLetter: kintone.fieldTypes.File;
     medicalStatusForm: kintone.fieldTypes.File;
     employTable: {
         type: 'SUBTABLE';
@@ -380,6 +381,7 @@ export type REST_VolunteerApplicationForm = {
     criminalCheckApostille: KintoneRecordField.File;
     passport: KintoneRecordField.File;
     doctorLetter: KintoneRecordField.File;
+    spouseLetter: KintoneRecordField.File;
     medicalStatusForm: KintoneRecordField.File;
     employTable: {
         type: 'SUBTABLE';

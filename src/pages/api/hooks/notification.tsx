@@ -4,6 +4,7 @@ import React from 'react';
 import { sendEmail } from '@/lib/email-service';
 import logError from '@/common/logError';
 import { REST_SavedOnlineVolunteerApplication, REST_OnlineVolunteerApplication } from '@/types/OnlineVolunteerApplication';
+import { isSpouseLetterRequiredValue } from '@/constants/necessaryDocuments';
 
 const necessaryDocuments = {
     passport: 'Passport',
@@ -55,7 +56,8 @@ type Updated =
     | 'healthQuestionnaire'
     | 'criminalCheck'
     | 'criminalCheckApostille'
-    | 'ssn';
+    | 'ssn'
+    | 'spouseLetter';
 export const updated = {
     passport: 'Passport',
     recentPhoto: 'Recent Photo',
@@ -65,7 +67,8 @@ export const updated = {
     healthQuestionnaire: 'Health Questionnaire',
     criminalCheck: 'Criminal Check',
     criminalCheckApostille: 'Criminal Check Apostille',
-    ssn: 'Social Security Card'
+    ssn: 'Social Security Card',
+    spouseLetter: 'Spouse Letter'
 };
 export const notificationApplicationUpdated = async (
     res: any,
@@ -77,12 +80,15 @@ export const notificationApplicationUpdated = async (
         const name = record['name'].value;
         const office = record['office'].value as EmailNationalOffice | 'Australia';
         const documents = record['documents'].value;
-        const this_necessaryDocuments =
+        const baseDocuments =
             record['office'].value === 'USA'
                 ? necessaryDocumentsUSA
                 : record['type'].value === 'Short Term'
                 ? necessaryDocumentsShortTerm
                 : necessaryDocuments;
+        const this_necessaryDocuments = isSpouseLetterRequiredValue(record.isSpouseLetterRequired?.value)
+            ? { ...baseDocuments, spouseLetter: 'Spouse Letter' }
+            : baseDocuments;
         if (!office) throw new Error('Invalid office');
         // return if documentSubmission and not complete
         if (submitType === 'documentSubmission' && documents.length < Object.keys(this_necessaryDocuments).length) {
