@@ -97,11 +97,16 @@ const Documents = ({ repo }: InferGetServerSidePropsType<typeof getServerSidePro
                             </div>
                         )}
                         {repo?.isSpouseLetterRequired && (
-                            <div className="relative flex items-center">
-                                <Link href="./documents/spouse-letter" className="btn">
-                                    Spouse Letter
-                                </Link>
-                                {isSubmitted('spouseLetter') && <Check />}
+                            <div className="flex flex-col items-center">
+                                <p className="max-w-xs mt-4 mb-1 text-sm leading-snug">
+                                    Ask your spouse for a signed and dated letter confirming that they support you volunteering away from them
+                                </p>
+                                <div className="relative flex items-center">
+                                    <Link href="./documents/spouse-letter" className="btn">
+                                        Upload Spouse Letter
+                                    </Link>
+                                    {isSubmitted('spouseLetter') && <Check />}
+                                </div>
                             </div>
                         )}
                         {/* <h1 className="text-xl my-10">

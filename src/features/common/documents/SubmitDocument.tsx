@@ -14,9 +14,10 @@ import { NecessaryDocuments } from '@/constants/necessaryDocuments';
 type SubmitDocumentProps = {
     document: NecessaryDocuments;
     title: string;
+    description?: string;
     Help?: FC<any>;
 };
-const SubmitDocument: FC<SubmitDocumentProps> = ({ document, title, Help }) => {
+const SubmitDocument: FC<SubmitDocumentProps> = ({ document, title, description, Help }) => {
     const { ref, username, name, type, initUser, applicationRef, getDocuments } = useUserStore(
         useShallow((state) => ({
             ref: state.ref,
@@ -151,6 +152,7 @@ const SubmitDocument: FC<SubmitDocumentProps> = ({ document, title, Help }) => {
             <>
                 <div className="relative flex flex-col items-center justify-center pt-10 pb-8 text-center min-h-screen text-white overflow-hidden">
                     <span style={{ fontSize: '2rem' }}>{title}</span>
+                    {description && <p className="max-w-xl mx-4 mt-3 text-base leading-snug">{description}</p>}
                     {fileData.length == 0 && (
                         <>
                             <div className="md:hidden m-5">
